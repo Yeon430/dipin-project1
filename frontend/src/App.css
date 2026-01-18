@@ -16,6 +16,12 @@
   margin-bottom: 12px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .user-selector {
   font-size: 14px;
   display: flex;
@@ -24,6 +30,22 @@
 
 .user-selector input {
   width: 60px;
+}
+
+.register-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.register-button:hover {
+  background-color: #218838;
 }
 
 main {

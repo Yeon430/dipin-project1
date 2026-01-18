@@ -33,6 +33,26 @@ class ApiService {
     }
     return response.json();
   }
+
+  /**
+   * 회원가입 (추천인 코드 포함)
+   */
+  static async register(userData) {
+    const response = await fetch(`${API_BASE_URL}/users/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || '가입 중 오류가 발생했습니다.');
+    }
+
+    return response.json();
+  }
 }
 
 export default ApiService;
