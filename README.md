@@ -5,16 +5,26 @@
 ## 기술 스택
 
 - Backend: Node.js + Express + SQLite
-- Frontend: React (예정)
+- Frontend: React
 - Port: Backend 3001, Frontend 3000
 
 ## 설치 및 실행
+
+### Backend
 
 ```bash
 cd backend
 npm install
 npm run init-db    # DB 초기화
 npm start          # 서버 실행 (http://localhost:3001)
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm start          # 개발 서버 실행 (http://localhost:3000)
 ```
 
 ## Step 1 완료 ✅
@@ -63,7 +73,21 @@ cd backend
 node test-step2.js
 ```
 
+## Step 3 완료 ✅
+
+### 초대 대시보드 및 공유 UI
+
+- 초대 코드 확인 및 복사 기능
+- 초대 통계 표시 (친구 수, 획득 포인트)
+- 초대한 친구 목록 조회
+- React 컴포넌트 기반 UI
+
+### 주요 컴포넌트
+
+- `ReferralCode` - 초대 코드 표시 및 복사
+- `ReferralDashboard` - 대시보드 (통계, 목록)
+- API 서비스 레이어로 백엔드 연동
+
 ## 다음 단계
 
-- Step 3: 초대 대시보드 및 공유 UI
 - Step 4: 리팩토링 (코드 중복 제거, 상수 분리)
