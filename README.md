@@ -88,6 +88,17 @@ node test-step2.js
 - `ReferralDashboard` - 대시보드 (통계, 목록)
 - API 서비스 레이어로 백엔드 연동
 
-## 다음 단계
+## Step 4 완료 ✅
 
-- Step 4: 리팩토링 (코드 중복 제거, 상수 분리)
+### 리팩토링 및 상수 분리
+
+- **코드 중복 제거**: 응답/에러 처리 패턴 통일
+- **상수 분리**: 에러 메시지, 성공 메시지, HTTP 상태 코드
+- **유틸리티 함수**: ResponseHelper, ValidationHelper 생성
+- **유지보수성 향상**: 정책 변경 시 상수 파일만 수정
+
+### 주요 변경사항
+
+- `config/constants.js` - 에러/성공 메시지, HTTP 상태 코드 상수화
+- `utils/responseHelper.js` - API 응답 포맷 통일
+- `utils/validationHelper.js` - 유효성 검증 로직 통일

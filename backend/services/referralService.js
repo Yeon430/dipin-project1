@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const Referral = require('../models/referral');
-const { REFERRAL_REWARD_POINTS } = require('../config/constants');
+const { REFERRAL_REWARD_POINTS, ERROR_MESSAGES } = require('../config/constants');
 
 class ReferralService {
   /**
@@ -71,7 +71,7 @@ class ReferralService {
         if (err) {
           resolve({
             isValid: false,
-            error: '추천인 코드 검증 중 오류가 발생했습니다.'
+            error: ERROR_MESSAGES.REFERRAL_CODE_VALIDATION_ERROR
           });
           return;
         }
@@ -80,7 +80,7 @@ class ReferralService {
         if (!inviter) {
           resolve({
             isValid: false,
-            error: '유효하지 않은 추천인 코드입니다.'
+            error: ERROR_MESSAGES.INVALID_REFERRAL_CODE
           });
           return;
         }
