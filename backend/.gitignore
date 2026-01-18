@@ -1,0 +1,6 @@
+node_modules/
+referral.db
+referral.db-journal
+*.log
+.DS_Store
+
