@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const User = require('./models/user');
 const Referral = require('./models/referral');
+const ReferralService = require('./services/referralService');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -100,6 +101,114 @@ app.get('/api/users/referral-code/:code', (req, res) => {
       id: user.id,
       name: user.name,
       referralCode: user.referral_code
+    });
+  });
+});
+
+// 추천인 등록 및 가입 (Step 2)
+app.post('/api/users/register', async (req, res) => {
+  try {
+    const { email, name, referralCode } = req.body;
+    
+    if (!email || !name) {
+      return res.status(400).json({ error: 'email과 name은 필수입니다.' });
+    }
+    
+    // 이메일 중복 체크
+    User.findByEmail(email, async (err, existingUser) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      
+      if (existingUser) {
+        return res.status(400).json({ error: '이미 존재하는 이메일입니다.' });
+      }
+      
+      try {
+        // 추천인 코드로 가입 처리
+        const result = await ReferralService.registerWithReferral(
+          { email, name },
+          referralCode
+        );
+        
+        res.status(201).json({
+          message: referralCode ? '가입 및 추천인 등록 성공' : '가입 성공',
+          user: {
+            id: result.user.id,
+            email: result.user.email,
+            name: result.user.name,
+            referralCode: result.user.referral_code,
+            points: result.user.points
+          },
+          referralApplied: result.referralApplied,
+          ...(result.referralApplied && {
+            pointsGiven: result.pointsGiven,
+            inviter: {
+              id: result.inviter.id,
+              name: result.inviter.name
+            }
+          })
+        });
+      } catch (error) {
+        // 유효하지 않은 추천인 코드 등 에러 처리
+        if (error.message.includes('추천인 코드') || error.message.includes('유효하지 않은')) {
+          return res.status(400).json({ error: error.message });
+        }
+        res.status(500).json({ error: error.message });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 초대 통계 조회 (Step 2 - 추가 API)
+app.get('/api/users/:id/referrals', (req, res) => {
+  const userId = parseInt(req.params.id);
+  
+  Referral.findByInviterId(userId, (err, referrals) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    
+    res.json({
+      userId: userId,
+      totalReferrals: referrals.length,
+      referrals: referrals.map(r => ({
+        id: r.id,
+        inviteeName: r.invitee_name,
+        inviteeEmail: r.invitee_email,
+        pointsGiven: r.points_given,
+        createdAt: r.created_at
+      }))
+    });
+  });
+});
+
+// 초대 통계 간단 조회 (Step 2 - 추가 API)
+app.get('/api/users/:id/referral-stats', (req, res) => {
+  const userId = parseInt(req.params.id);
+  
+  Referral.countByInviterId(userId, (err, count) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    
+    User.findById(userId, (err, user) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      
+      if (!user) {
+        return res.status(404).json({ error: '사용자를 찾을 수 없습니다.' });
+      }
+      
+      res.json({
+        userId: userId,
+        referralCode: user.referral_code,
+        totalReferrals: count,
+        totalPoints: user.points
+      });
     });
   });
 });

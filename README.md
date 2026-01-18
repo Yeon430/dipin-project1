@@ -42,8 +42,28 @@ cd backend
 node test-step1.js
 ```
 
+## Step 2 완료 ✅
+
+### 추천인 등록 및 포인트 지급
+
+- 추천인 코드로 가입 시 양측에게 5,000 포인트 지급
+- 포인트 상수 분리 (`config/constants.js`)
+- 유효성 검증 (유효하지 않은 코드, 이메일 중복)
+
+### API
+
+- `POST /api/users/register` - 추천인 코드로 가입
+- `GET /api/users/:id/referrals` - 내가 초대한 사람 목록
+- `GET /api/users/:id/referral-stats` - 초대 통계
+
+### 테스트
+
+```bash
+cd backend
+node test-step2.js
+```
+
 ## 다음 단계
 
-- Step 2: 추천인 등록 API 및 포인트 지급 로직
 - Step 3: 초대 대시보드 및 공유 UI
 - Step 4: 리팩토링 (코드 중복 제거, 상수 분리)
