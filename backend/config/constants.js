@@ -11,6 +11,7 @@ module.exports = {
     EMAIL_ALREADY_EXISTS: '이미 존재하는 이메일입니다.',
     USER_NOT_FOUND: '사용자를 찾을 수 없습니다.',
     INVALID_REFERRAL_CODE: '유효하지 않은 초대 코드입니다.',
+    SELF_REFERRAL: '자기 자신의 초대 코드는 사용할 수 없습니다.',
     REFERRAL_CODE_VALIDATION_ERROR: '추천인 코드 검증 중 오류가 발생했습니다.'
   },
 

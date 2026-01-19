@@ -90,15 +90,31 @@ node test-step2.js
 
 ## Step 4 완료 ✅
 
-### 리팩토링 및 상수 분리
+### 리팩토링 및 설계 개선 (Evaluation 반영)
 
-- **코드 중복 제거**: 응답/에러 처리 패턴 통일
-- **상수 분리**: 에러 메시지, 성공 메시지, HTTP 상태 코드
-- **유틸리티 함수**: ResponseHelper, ValidationHelper 생성
-- **유지보수성 향상**: 정책 변경 시 상수 파일만 수정
+- **데이터 일관성 보장 (Transaction)**: 
+  - `ReferralService`에서 SQLite 트랜잭션을 도입하여 `사용자 생성 - 포인트 지급 - 추천 관계 기록`을 하나의 원자적 단위로 묶었습니다.
+  - 도중에 실패할 경우 전체 롤백되어 데이터 무결성을 보장합니다.
+- **예외 처리 및 보안 강화**:
+  - 본인 초대 코드 사용 방지 로직 추가
+  - 중복 요청 및 이메일 중복에 대한 트랜잭션 내 검증 강화
+  - 보안을 위해 내부 에러 메시지를 상수화된 메시지로 래핑하여 노출 최소화
+- **유지보수성 및 확장성**:
+  - `config/constants.js`를 통한 설정 중앙화 (포인트, 메시지, HTTP 상태 코드)
+  - `ResponseHelper`, `ValidationHelper` 도입으로 코드 재사용성 극대화
 
-### 주요 변경사항
+### 트러블슈팅 및 설계 의도
 
-- `config/constants.js` - 에러/성공 메시지, HTTP 상태 코드 상수화
-- `utils/responseHelper.js` - API 응답 포맷 통일
-- `utils/validationHelper.js` - 유효성 검증 로직 통일
+1. **왜 트랜잭션이 필요한가?**
+   - 단순히 `await`를 순서대로 호출하면, 사용자 생성 후 포인트 지급 중에 에러가 났을 때 포인트는 안 들어갔는데 가입은 되어버리는 불일치가 발생합니다. 이를 방지하기 위해 명시적인 `BEGIN/COMMIT/ROLLBACK`을 사용했습니다.
+2. **효율성 고려**:
+   - 한 번의 DB 커넥션 내에서 모든 검증과 삽입을 처리하여 네트워크 및 리소스 오버헤드를 최소화했습니다.
+3. **확장성**:
+   - 향후 '추천 보상 2배 이벤트' 등이 발생해도 `REFERRAL_REWARD_POINTS` 상수 하나만 변경하면 모든 로직에 즉시 반영됩니다.
+
+### 주요 파일 구조 (Refactored)
+
+- `backend/services/referralService.js`: 핵심 비즈니스 로직 (Transaction 관리)
+- `backend/utils/`: 공통 유틸리티 (응답 포맷, 유효성 검사)
+- `backend/config/constants.js`: 시스템 전반의 정책 및 설정 상수
+
